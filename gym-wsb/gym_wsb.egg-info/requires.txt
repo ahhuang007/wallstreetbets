@@ -1,0 +1,5 @@
+gym
+ccxt
+numpy
+pandas
+stable-baselines3

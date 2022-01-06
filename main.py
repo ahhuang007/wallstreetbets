@@ -5,4 +5,7 @@ Created on Wed Jan  5 19:48:07 2022
 @author: ahhua
 """
 
-#test file
+import gym
+from gym import envs
+import gym_wsb
+gym.make('gym-wsb-v0', episode_timesteps=100, use_gui=True)
