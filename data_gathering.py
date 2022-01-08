@@ -45,13 +45,15 @@ def get_url(l1, l2, c):
 headers = {"Accept": "application/json"}
 
 
-#List cryptocurrencies by trade volume:
+#List of cryptocurrencies:
 #BTC, ETH, BCH, LINK, SOL, ATOM, MANA, MATIC, DOT, ADA
+#AVAX, ALGO, AAVE, UNI, LTC, LRC
 
 
-cryptos = ['BTC', 'ETH', 'BCH', 'LINK', 'SOL', 'ATOM', 'MANA', 'MATIC', 'DOT', 'ADA']
+cryptos = ['AVAX', 'UNI', 'AAVE', 'ALGO', 'LTC', 'LRC']#['BTC', 'ETH', 'BCH', 'LINK', 'SOL', 'ATOM', 'MANA', 'MATIC', 'DOT', 'ADA']
 for i in range(len(cryptos)):
     c = cryptos[i]
+    print(c)
     #Creating DataFrame to save later with our data
     df = pd.DataFrame(columns = ['timestamp', 'low', 'high', 'open', 'close', 'volume'])
     
@@ -87,8 +89,8 @@ for i in range(len(cryptos)):
         li = [df, subdf]
         df = pd.concat(li, ignore_index = True)
         
-    #Reverse rows, save df
-    df = df.iloc[::-1].reset_index(drop = True)
+    #Sort rows, save df
+    df = df.sort_values('timestamp').reset_index(drop = True)
     df.to_csv("./data/" + c + "_data.csv")
 
     
