@@ -4,32 +4,39 @@ Created on Tue Jan 11 03:24:07 2022
 
 @author: ahhua
 """
-#functions to take care of selling/buying
+'''Functions to take care of selling/buying
+Inputs: balance - current amount of fiat currency
+action - float in range [-1, 1]. Negative values indicate selling, positive
+values indicate buying. Example - an action of value 0.5 means using 50% of
+available balance to buy X crypto.
+fee - transaction fee
+i - index value for the crypto in question
+shares - list of our current portfolio
+closes - list of closing prices for our cryptocurrencies
+Returns: balance - updated balance after transaction
+shares - updated portfolio after transaction
+'''
 
-def sell_low(index, action):
-        if self.state[index+STOCK_DIM+1] > 0:
-            #update balance
-            self.state[0] += \
-            self.state[index+1]*min(abs(action),self.state[index+STOCK_DIM+1]) * \
-             (1- TRANSACTION_FEE_PERCENT)
-            
-            self.state[index+STOCK_DIM+1] -= min(abs(action), self.state[index+STOCK_DIM+1])
-            self.cost +=self.state[index+1]*min(abs(action),self.state[index+STOCK_DIM+1]) * \
-             TRANSACTION_FEE_PERCENT
-            self.trades+=1
-        else:
-            pass
+def sell_low(balance, action, fee, i, shares, closes):
+    if shares[i] > 0:
+        #update balance
+        balance += shares[i] * abs(action) * (1 - fee) * closes[i]
+        
+        shares[i] -= abs(action) * shares[i]
+        #cost += state[index+1]*min(abs(action), state[index+STOCK_DIM+1]) * fee
+        #trades += 1
+    else:
+        pass #No shares to sell!
+    return balance, shares
 
-def _buy_stock(self, index, action):
-    available_amount = self.state[0] // self.state[index+1]
-    # print('available_amount:{}'.format(available_amount))
-    
-    #update balance
-    self.state[0] -= self.state[index+1]*min(available_amount, action)* \
-                      (1+ TRANSACTION_FEE_PERCENT)
-
-    self.state[index+STOCK_DIM+1] += min(available_amount, action)
-    
-    self.cost+=self.state[index+1]*min(available_amount, action)* \
-                      TRANSACTION_FEE_PERCENT
-    self.trades+=1
+def buy_high(balance, action, fee, i, shares, closes):
+    if balance > 0:
+        #update balance
+        
+        shares[i] += ((1 - fee) * balance * abs(action)) / closes[i]
+        balance -= abs(action) * balance
+        #cost+= state[index+1]*min(available_amount, action) * fee
+        #trades += 1
+    else:
+        pass
+    return balance, shares
