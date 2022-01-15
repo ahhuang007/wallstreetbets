@@ -29,7 +29,7 @@ for c in cryptos:
     '''
     dfs.append(df[:175200])
 
-env = gym.make('gym-wsb-v0', data = dfs)
+env = gym.make('gym-wsb-v0', data = dfs, cryptos = cryptos)
 
 from stable_baselines3.common.env_checker import check_env
 
@@ -42,7 +42,7 @@ env.observation_space.seed(4)
 model.set_random_seed(4)
 
 #performance with random model
-mean_reward, std_reward = evaluate_policy(model, env, n_eval_episodes=10, deterministic=True)
+mean_reward, std_reward = evaluate_policy(model, env, n_eval_episodes=1, deterministic=False)
 
 print(f"mean_reward={mean_reward:.2f} +/- {std_reward}")
 
@@ -57,18 +57,55 @@ ppo_model.set_random_seed(4)
 
 data = [] #Tracks reward at each timestep
 cum_data = [] #Tracks cumulative rewards at end of each episode
-crypto_data = [[]] * len(cryptos) #Tracks the amounts of crypto bought/sold
-record = Recorder(data, cum_data, crypto_data)
+crypto_data = [[] for x in cryptos] #Tracks the amounts of crypto bought/sold
+total_data = [] #Tracks total money at each timestep
+balance_data = [] #Tracks our balance at each timestep
+record = Recorder(data, cum_data, crypto_data, total_data, balance_data, cryptos)
 
 env.reset()
-#set total_timesteps equal to n_eval_episodes * max_timesteps
 #model will go through 2048*x timsteps, where total_timesteps will be rounded up
 #to nearest multiple of 2048
 #action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))
 
-ppo_model = ppo_model.learn(total_timesteps = 100000, log_interval = 10000, callback = record)
+ppo_model = ppo_model.learn(total_timesteps = 1000, callback = record)
 ppo_model.save("models/trained_models/trained_model_ppo_v1")
 
-mean_reward, std_reward = evaluate_policy(ppo_model, env, n_eval_episodes=10, deterministic=True)
+mean_reward, std_reward = evaluate_policy(ppo_model, env, n_eval_episodes=1, deterministic=True)
 
 print(f"mean_reward={mean_reward:.2f} +/- {std_reward}")
+
+#Saving/plotting data
+data_dict = {}
+data_dict["reward"] = data
+data_dict["total"] = total_data
+data_dict["balance"] = balance_data
+for i in range(len(cryptos)):
+    data_dict[cryptos[i]] = crypto_data[i]
+df = pd.DataFrame(data = data_dict)
+df2 = pd.DataFrame(data = {"episode":range(1, len(cum_data) + 1), "cumulative reward": cum_data})
+
+df.to_csv("./data/data_from_training/timestep_rewards/ppo_rewards_v1.csv")
+df2.to_csv("./data/data_from_training/cumulative_rewards/ppo_cum_rewards_v1.csv")
+
+import matplotlib.pyplot as plt
+plt.plot(df.index, df['total'])
+plt.xlabel('timestep')
+plt.ylabel('moolah')
+plt.title('total money over time')
+plt.show()
+
+plt.rcParams["figure.figsize"]=(20,20)
+plt.plot(df.index, df['balance'])
+for c in cryptos:
+    plt.plot(df.index, df[c], label = c, linewidth = 0.1)
+plt.xlabel('timestep')
+plt.ylabel('units')
+plt.title('charting shares over time')
+plt.legend()
+plt.show()
+
+plt.plot(df.index, df['reward'])
+plt.xlabel('timestep')
+plt.ylabel('reward')
+plt.title('reward at each timestep')
+plt.show()

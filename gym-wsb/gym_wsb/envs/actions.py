@@ -32,9 +32,11 @@ def sell_low(balance, action, fee, i, shares, closes):
 def buy_high(balance, action, fee, i, shares, closes):
     if balance > 0:
         #update balance
-        
-        shares[i] += ((1 - fee) * balance * abs(action)) / closes[i]
-        balance -= abs(action) * balance
+        if closes[i] > 0: #Price must exist to be able to be bought
+            shares[i] += ((1 - fee) * balance * abs(action)) / closes[i]
+            balance -= abs(action) * balance
+        else:
+            pass
         #cost+= state[index+1]*min(available_amount, action) * fee
         #trades += 1
     else:
