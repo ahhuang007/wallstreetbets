@@ -73,6 +73,7 @@ class WSBEnv(gym.Env):
         reward += self.shares[j] * self.closes[j]
     self.total = reward
     reward -= previous_total
+    reward = reward / previous_total
     
     #Broadcasting updates
     if self.timestep % 1000 == 0:
@@ -92,7 +93,7 @@ class WSBEnv(gym.Env):
         self.observations = [self.balance] + self.shares + self.prices
     else:
         self.done = True
-    if self.total < 10:
+    if self.total < 20:
         print("balance too low")
         self.done = True
     return np.array(self.observations, dtype = 'float32'), reward, self.done, info

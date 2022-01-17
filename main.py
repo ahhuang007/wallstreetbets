@@ -67,7 +67,7 @@ env.reset()
 #to nearest multiple of 2048
 #action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))
 
-ppo_model = ppo_model.learn(total_timesteps = 1000, callback = record)
+ppo_model = ppo_model.learn(total_timesteps = 525600, callback = record)
 ppo_model.save("models/trained_models/trained_model_ppo_v1")
 
 mean_reward, std_reward = evaluate_policy(ppo_model, env, n_eval_episodes=1, deterministic=True)
@@ -95,12 +95,12 @@ plt.title('total money over time')
 plt.show()
 
 plt.rcParams["figure.figsize"]=(20,20)
-plt.plot(df.index, df['balance'])
+plt.plot(df.index, df['balance'], label = "USD", linewidth = 0.1, alpha = 0.5)
 for c in cryptos:
-    plt.plot(df.index, df[c], label = c, linewidth = 0.1)
+    plt.plot(df.index, df[c], label = c, linewidth = 0.1, alpha = 0.5)
 plt.xlabel('timestep')
-plt.ylabel('units')
-plt.title('charting shares over time')
+plt.ylabel('Amount (USD)')
+plt.title('charting holdings over time')
 plt.legend()
 plt.show()
 
@@ -108,4 +108,10 @@ plt.plot(df.index, df['reward'])
 plt.xlabel('timestep')
 plt.ylabel('reward')
 plt.title('reward at each timestep')
+plt.show()
+
+plt.plot(df2['episode'], df2['cumulative reward'])
+plt.xlabel('episode')
+plt.ylabel('total reward')
+plt.title('reward after each episode')
 plt.show()
