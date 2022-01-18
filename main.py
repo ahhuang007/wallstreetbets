@@ -29,6 +29,7 @@ for c in cryptos:
     '''
     dfs.append(df[:175200])
 
+version = "2" #Latest version of model that we're training, for logging purposes
 env = gym.make('gym-wsb-v0', data = dfs, cryptos = cryptos)
 
 from stable_baselines3.common.env_checker import check_env
@@ -46,7 +47,9 @@ mean_reward, std_reward = evaluate_policy(model, env, n_eval_episodes=1, determi
 
 print(f"mean_reward={mean_reward:.2f} +/- {std_reward}")
 
-model.save("models/random_models/random_model_ppo_v1")
+model.save("models/random_models/random_model_ppo_v" + version)
+
+#%%
 
 #In case I want to load a previously trained model for more training
 #ppo_model = PPO.load("models/trained_models/trained_model_ppo_v1", env = env)
@@ -67,9 +70,12 @@ env.reset()
 #to nearest multiple of 2048
 #action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))
 
-ppo_model = ppo_model.learn(total_timesteps = 525600, callback = record)
-ppo_model.save("models/trained_models/trained_model_ppo_v1")
+#%%
 
+ppo_model = ppo_model.learn(total_timesteps = 525600, callback = record, reset_num_timesteps=False)
+ppo_model.save("models/trained_models/trained_model_ppo_v" + version)
+
+#%%
 mean_reward, std_reward = evaluate_policy(ppo_model, env, n_eval_episodes=1, deterministic=True)
 
 print(f"mean_reward={mean_reward:.2f} +/- {std_reward}")
@@ -84,10 +90,12 @@ for i in range(len(cryptos)):
 df = pd.DataFrame(data = data_dict)
 df2 = pd.DataFrame(data = {"episode":range(1, len(cum_data) + 1), "cumulative reward": cum_data})
 
-df.to_csv("./data/data_from_training/timestep_rewards/ppo_rewards_v1.csv")
-df2.to_csv("./data/data_from_training/cumulative_rewards/ppo_cum_rewards_v1.csv")
+df.to_csv("./data/data_from_training/timestep_rewards/ppo_rewards_v" + version + ".csv")
+df2.to_csv("./data/data_from_training/cumulative_rewards/ppo_cum_rewards_v" + version + ".csv")
 
 import matplotlib.pyplot as plt
+from scipy.ndimage.filters import uniform_filter1d
+
 plt.plot(df.index, df['total'])
 plt.xlabel('timestep')
 plt.ylabel('moolah')
@@ -95,16 +103,19 @@ plt.title('total money over time')
 plt.show()
 
 plt.rcParams["figure.figsize"]=(20,20)
-plt.plot(df.index, df['balance'], label = "USD", linewidth = 0.1, alpha = 0.5)
+plt.plot(df.index, df['balance'], label = "USD", linewidth = 0.2, alpha = 0.75)
 for c in cryptos:
-    plt.plot(df.index, df[c], label = c, linewidth = 0.1, alpha = 0.5)
+    plt.plot(df.index, df[c], label = c, linewidth = 0.2, alpha = 0.75)
 plt.xlabel('timestep')
 plt.ylabel('Amount (USD)')
 plt.title('charting holdings over time')
 plt.legend()
 plt.show()
 
+N = 20000
 plt.plot(df.index, df['reward'])
+y = uniform_filter1d(df['reward'], size=N)
+plt.plot(df.index, y)
 plt.xlabel('timestep')
 plt.ylabel('reward')
 plt.title('reward at each timestep')
