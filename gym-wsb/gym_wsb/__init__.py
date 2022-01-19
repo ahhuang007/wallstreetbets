@@ -11,3 +11,6 @@ register(
     id='gym-wsb-v0',
     entry_point='gym_wsb.envs:WSBEnv',
 )
+register(
+    id='gym-wsb-val-v0',
+    entry_point='gym_wsb.envs:ValEnv')
