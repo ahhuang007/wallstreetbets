@@ -29,25 +29,16 @@ for c in cryptos:
     '''
     dfs.append(df[:175200])
 
-version = "2" #Latest version of model that we're training, for logging purposes
+version = "3" #Latest version of model that we're training, for logging purposes
 env = gym.make('gym-wsb-v0', data = dfs, cryptos = cryptos)
 
 from stable_baselines3.common.env_checker import check_env
 
 check_env(env, warn=True)
 
-model = PPO('MlpPolicy', env, verbose = 1)
 env.seed(4)
 env.action_space.seed(4)
 env.observation_space.seed(4)
-model.set_random_seed(4)
-
-#performance with random model
-mean_reward, std_reward = evaluate_policy(model, env, n_eval_episodes=1, deterministic=False)
-
-print(f"mean_reward={mean_reward:.2f} +/- {std_reward}")
-
-model.save("models/random_models/random_model_ppo_v" + version)
 
 #%%
 
@@ -76,9 +67,6 @@ ppo_model = ppo_model.learn(total_timesteps = 525600, callback = record, reset_n
 ppo_model.save("models/trained_models/trained_model_ppo_v" + version)
 
 #%%
-mean_reward, std_reward = evaluate_policy(ppo_model, env, n_eval_episodes=1, deterministic=True)
-
-print(f"mean_reward={mean_reward:.2f} +/- {std_reward}")
 
 #Saving/plotting data
 data_dict = {}
