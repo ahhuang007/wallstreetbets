@@ -12,6 +12,7 @@ import time
 import pandas as pd
 import numpy as np
 from gym_wsb.envs.actions import buy_high, sell_low
+import random
 
 initial_balance = 100 #Initial amount of money
 transaction_fee = 0.005 #May be 0.0035
@@ -101,7 +102,7 @@ class WSBEnv(gym.Env):
   def reset(self):
     self.balance = initial_balance
     self.shares = [0] * num_cryptos
-    self.timestep = 0
+    self.timestep = random.randint(0, self.last_timestep - 1)
     self.lows = [x.loc[self.timestep]['low'] for x in self.dfs]
     self.highs = [x.loc[self.timestep]['high'] for x in self.dfs]
     self.opens = [x.loc[self.timestep]['open'] for x in self.dfs]
