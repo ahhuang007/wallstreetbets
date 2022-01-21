@@ -33,7 +33,7 @@ for c in cryptos:
     '''
     dfs.append(df[175200:262800].reset_index(drop = True))
 
-version = "3" #Latest version of model that we're training, for logging purposes
+version = "4" #Latest version of model that we're training, for logging purposes
 env = gym.make('gym-wsb-val-v0', data = dfs, cryptos = cryptos)
 
 from stable_baselines3.common.env_checker import check_env
