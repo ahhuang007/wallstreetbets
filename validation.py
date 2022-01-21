@@ -33,7 +33,7 @@ for c in cryptos:
     '''
     dfs.append(df[175200:262800].reset_index(drop = True))
 
-version = "1" #Latest version of model that we're training, for logging purposes
+version = "3" #Latest version of model that we're training, for logging purposes
 env = gym.make('gym-wsb-val-v0', data = dfs, cryptos = cryptos)
 
 from stable_baselines3.common.env_checker import check_env
@@ -100,7 +100,7 @@ from scipy.ndimage.filters import uniform_filter1d
 plt.plot(df.index, df['total'])
 plt.xlabel('timestep')
 plt.ylabel('moolah')
-plt.title('total money over time (version ' + version + ')')
+plt.title('total money over time (validation, version ' + version + ')')
 plt.show()
 
 plt.rcParams["figure.figsize"]=(20,20)
@@ -109,7 +109,7 @@ for c in cryptos:
     plt.plot(df.index, df[c], label = c, linewidth = 0.2, alpha = 0.75)
 plt.xlabel('timestep')
 plt.ylabel('Amount (USD)')
-plt.title('charting holdings over time (version ' + version + ')')
+plt.title('charting holdings over time (validation, version ' + version + ')')
 plt.legend()
 plt.show()
 
@@ -119,5 +119,5 @@ y = uniform_filter1d(df['reward'], size=N)
 plt.plot(df.index, y)
 plt.xlabel('timestep')
 plt.ylabel('reward')
-plt.title('reward at each timestep (version ' + version + ')')
+plt.title('reward at each timestep (validation, version ' + version + ')')
 plt.show()
