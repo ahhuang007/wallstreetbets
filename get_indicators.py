@@ -71,5 +71,5 @@ for c in cryptos:
     del df['DX']
     del df['-DM']
     del df['+DM']
-    
+    df = df.fillna(0)
     df.to_csv('./data/' + c + '_data.csv')

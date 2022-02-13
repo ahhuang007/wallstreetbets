@@ -36,10 +36,13 @@ class ValEnv(gym.Env):
     self.closes = [x.loc[self.timestep]['close'] for x in self.dfs]
     self.volumes = [x.loc[self.timestep]['volume'] for x in self.dfs]
     self.prices = self.lows + self.highs + self.opens + self.closes + self.volumes
+    self.macd = [x.loc[self.timestep]['MACD'] for x in self.dfs]
+    self.cci = [x.loc[self.timestep]['CCI'] for x in self.dfs]
+    self.adx = [x.loc[self.timestep]['ADX'] for x in self.dfs]
     
-    self.observations = [self.balance] + self.shares + self.prices
+    self.observations = [self.balance] + self.shares + self.prices + self.macd + self.cci + self.adx
     self.action_space = spaces.Box(low = -1, high = 1, shape = (num_cryptos,), dtype = 'float32') 
-    self.observation_space = spaces.Box(low=0, high=np.inf, shape = (len(self.observations),), dtype = 'float32')
+    self.observation_space = spaces.Box(low=-np.inf, high=np.inf, shape = (len(self.observations),), dtype = 'float32')
     self.done = False
     self.total = self.balance
     
@@ -90,7 +93,11 @@ class ValEnv(gym.Env):
         self.closes = [x.loc[self.timestep]['close'] for x in self.dfs]
         self.volumes = [x.loc[self.timestep]['volume'] for x in self.dfs]
         self.prices = self.lows + self.highs + self.opens + self.closes + self.volumes
-        self.observations = [self.balance] + self.shares + self.prices
+        self.macd = [x.loc[self.timestep]['MACD'] for x in self.dfs]
+        self.cci = [x.loc[self.timestep]['CCI'] for x in self.dfs]
+        self.adx = [x.loc[self.timestep]['ADX'] for x in self.dfs]
+        
+        self.observations = [self.balance] + self.shares + self.prices + self.macd + self.cci + self.adx
     else:
         self.done = True
     
@@ -106,11 +113,15 @@ class ValEnv(gym.Env):
     self.closes = [x.loc[self.timestep]['close'] for x in self.dfs]
     self.volumes = [x.loc[self.timestep]['volume'] for x in self.dfs]
     self.prices = self.lows + self.highs + self.opens + self.closes + self.volumes
-    observations = [self.balance] + self.shares + self.prices
+    self.macd = [x.loc[self.timestep]['MACD'] for x in self.dfs]
+    self.cci = [x.loc[self.timestep]['CCI'] for x in self.dfs]
+    self.adx = [x.loc[self.timestep]['ADX'] for x in self.dfs]
+    
+    self.observations = [self.balance] + self.shares + self.prices + self.macd + self.cci + self.adx
     self.done = False
     self.total = self.balance
     print("resetting environment")
-    return np.array(observations, dtype = 'float32')
+    return np.array(self.observations, dtype = 'float32')
     
   def render(self, mode='human'):
     ...
