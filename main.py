@@ -29,7 +29,7 @@ for c in cryptos:
     '''
     dfs.append(df[:175200])
 
-version = "5" #Latest version of model that we're training, for logging purposes
+version = "6" #Latest version of model that we're training, for logging purposes
 env = gym.make('gym-wsb-v0', data = dfs, cryptos = cryptos)
 
 from stable_baselines3.common.env_checker import check_env
@@ -43,9 +43,8 @@ env.observation_space.seed(4)
 #%%
 
 #In case I want to load a previously trained model for more training
-#ppo_model = PPO.load("models/trained_models/trained_model_ppo_v1", env = env)
-#ppo_model.set_random_seed(4)
-ppo_model = PPO('MlpPolicy', env, verbose = 1)
+ppo_model = PPO.load("models/trained_models/trained_model_ppo_v5", env = env)
+#ppo_model = PPO('MlpPolicy', env, verbose = 1)
 ppo_model.set_random_seed(4)
 
 
@@ -56,14 +55,14 @@ total_data = [] #Tracks total money at each timestep
 balance_data = [] #Tracks our balance at each timestep
 record = Recorder(data, cum_data, crypto_data, total_data, balance_data, cryptos)
 
-env.reset()
+obs = env.reset()
 #model will go through 2048*x timsteps, where total_timesteps will be rounded up
 #to nearest multiple of 2048
 #action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))
 
 #%%
 
-ppo_model = ppo_model.learn(total_timesteps = 525600, callback = record, reset_num_timesteps=False)
+ppo_model = ppo_model.learn(total_timesteps = 525600, callback = record, reset_num_timesteps=True)
 ppo_model.save("models/trained_models/trained_model_ppo_v" + version)
 
 #%%
