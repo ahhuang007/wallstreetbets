@@ -52,6 +52,31 @@ class ValEnv(gym.Env):
     #0 percent, and range (0, 1] = buy crypto using a percentage of balance
     #ranging from 0 to 100 percent
     previous_total = self.total
+    argsort_actions = np.argsort(action)
+          
+    sell_index = argsort_actions[:np.where(action < 0)[0].shape[0]]
+    buy_index = argsort_actions[::-1][:np.where(action > 0)[0].shape[0]]
+
+    for index in sell_index:
+        # print('take sell action'.format(actions[index]))
+        #self._sell_stock(index, actions[index])
+        sell_low(self.balance,
+                 action[index],
+                 transaction_fee,
+                 index,
+                 self.shares,
+                 self.closes)
+
+    for index in buy_index:
+        # print('take buy action: {}'.format(actions[index]))
+        #self._buy_stock(index, actions[index])
+        buy_high(self.balance,
+                 action[index],
+                 transaction_fee,
+                 index,
+                 self.shares,
+                 self.closes)
+    '''
     for i in range(len(action)):
         a = action[i]
         if a < 0:
@@ -68,7 +93,7 @@ class ValEnv(gym.Env):
                                                  i,
                                                  self.shares,
                                                  self.closes)
-    
+    '''
     #Calculating reward
     reward = 0
     reward += self.balance

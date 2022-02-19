@@ -29,7 +29,7 @@ for c in cryptos:
     '''
     dfs.append(df[:175200])
 
-version = "7" #Latest version of model that we're training, for logging purposes
+version = "8" #Latest version of model that we're training, for logging purposes
 env = gym.make('gym-wsb-v0', data = dfs, cryptos = cryptos)
 
 from stable_baselines3.common.env_checker import check_env
@@ -43,8 +43,8 @@ env.observation_space.seed(4)
 #%%
 
 #In case I want to load a previously trained model for more training
-ppo_model = PPO.load("models/trained_models/trained_model_ppo_v6", env = env)
-#ppo_model = PPO('MlpPolicy', env, verbose = 1)
+#ppo_model = PPO.load("models/trained_models/trained_model_ppo_v6", env = env)
+ppo_model = PPO('MlpPolicy', env, verbose = 1)
 ppo_model.set_random_seed(4)
 
 
