@@ -61,7 +61,7 @@ class WSBEnv(gym.Env):
     for index in sell_index:
         # print('take sell action'.format(actions[index]))
         #self._sell_stock(index, actions[index])
-        sell_low(self.balance,
+        self.balance, self.shares = sell_low(self.balance,
                  action[index],
                  transaction_fee,
                  index,
@@ -71,7 +71,7 @@ class WSBEnv(gym.Env):
     for index in buy_index:
         # print('take buy action: {}'.format(actions[index]))
         #self._buy_stock(index, actions[index])
-        buy_high(self.balance,
+        self.balance, self.shares = buy_high(self.balance,
                  action[index],
                  transaction_fee,
                  index,
