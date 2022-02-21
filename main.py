@@ -22,6 +22,7 @@ cryptos = ['AAVE', 'ADA', 'ALGO', 'ATOM',
            'AVAX', 'BCH', 'BTC', 'DOT', 
            'ETH', 'LINK', 'LRC', 'LTC', 
            'MANA', 'MATIC', 'SOL', 'UNI']
+cryptos = ['BTC']
 for c in cryptos:
     df = pd.read_csv('./data/' + c + '_data.csv')
     '''I think we'll do a similar plan to my source idea.
@@ -29,12 +30,8 @@ for c in cryptos:
     '''
     dfs.append(df[:175200])
 
-version = "9" #Latest version of model that we're training, for logging purposes
+version = "10" #Latest version of model that we're training, for logging purposes
 env = gym.make('gym-wsb-v0', data = dfs, cryptos = cryptos)
-
-from stable_baselines3.common.env_checker import check_env
-
-check_env(env, warn=True)
 
 env.seed(4)
 env.action_space.seed(4)
@@ -43,8 +40,8 @@ env.observation_space.seed(4)
 #%%
 
 #In case I want to load a previously trained model for more training
-ppo_model = PPO.load("models/trained_models/trained_model_ppo_v8", env = env)
-#ppo_model = PPO('MlpPolicy', env, verbose = 1)
+#ppo_model = PPO.load("models/trained_models/trained_model_ppo_v8", env = env)
+ppo_model = PPO('MlpPolicy', env, verbose = 1)
 ppo_model.set_random_seed(4)
 
 

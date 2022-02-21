@@ -15,7 +15,6 @@ from gym_wsb.envs.actions import buy_high, sell_low
 
 initial_balance = 100 #Initial amount of money
 transaction_fee = 0.005 #May be 0.0035
-num_cryptos = 16 #Cryptos we will trade
 
 class ValEnv(gym.Env):
   metadata = {'render.modes': ['human']}
@@ -24,12 +23,13 @@ class ValEnv(gym.Env):
     super(ValEnv, self).__init__()
     #Setting up inital prices/data
     self.dfs = data
+    self.num_cryptos = len(self.dfs) #Cryptos we will trade
     self.timestep = 0
     self.last_timestep = len(self.dfs[0]) - 1
     self.cryptos = cryptos
     #initializing state
     self.balance = initial_balance
-    self.shares = [0] * num_cryptos
+    self.shares = [0] * self.num_cryptos
     self.lows = [x.loc[self.timestep]['low'] for x in self.dfs]
     self.highs = [x.loc[self.timestep]['high'] for x in self.dfs]
     self.opens = [x.loc[self.timestep]['open'] for x in self.dfs]
@@ -41,7 +41,7 @@ class ValEnv(gym.Env):
     self.adx = [x.loc[self.timestep]['ADX'] for x in self.dfs]
     
     self.observations = [self.balance] + self.shares + self.prices + self.macd + self.cci + self.adx
-    self.action_space = spaces.Box(low = -1, high = 1, shape = (num_cryptos,), dtype = 'float32') 
+    self.action_space = spaces.Box(low = -1, high = 1, shape = (self.num_cryptos,), dtype = 'float32') 
     self.observation_space = spaces.Box(low=-np.inf, high=np.inf, shape = (len(self.observations),), dtype = 'float32')
     self.done = False
     self.total = self.balance
@@ -97,7 +97,7 @@ class ValEnv(gym.Env):
     #Calculating reward
     reward = 0
     reward += self.balance
-    for j in range(num_cryptos):
+    for j in range(self.num_cryptos):
         reward += self.shares[j] * self.closes[j]
     self.total = reward
     reward -= previous_total
@@ -130,7 +130,7 @@ class ValEnv(gym.Env):
 
   def reset(self):
     self.balance = initial_balance
-    self.shares = [0] * num_cryptos
+    self.shares = [0] * self.num_cryptos
     self.timestep = 0
     self.lows = [x.loc[self.timestep]['low'] for x in self.dfs]
     self.highs = [x.loc[self.timestep]['high'] for x in self.dfs]
