@@ -30,7 +30,7 @@ for c in cryptos:
     '''
     dfs.append(df[:175200])
 
-version = "10" #Latest version of model that we're training, for logging purposes
+version = "11" #Latest version of model that we're training, for logging purposes
 env = gym.make('gym-wsb-v0', data = dfs, cryptos = cryptos)
 
 env.seed(4)
