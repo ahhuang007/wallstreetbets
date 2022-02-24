@@ -28,9 +28,9 @@ for c in cryptos:
     '''I think we'll do a similar plan to my source idea.
     5 months for training, 2 months for validation/tuning, 5 months for testing
     '''
-    dfs.append(df[:175200])
+    dfs.append(df[88000:175200 + 88000].reset_index(drop = True))
 
-version = "11" #Latest version of model that we're training, for logging purposes
+version = "12" #Latest version of model that we're training, for logging purposes
 env = gym.make('gym-wsb-v0', data = dfs, cryptos = cryptos)
 
 env.seed(4)

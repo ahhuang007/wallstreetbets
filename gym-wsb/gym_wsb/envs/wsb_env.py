@@ -25,7 +25,7 @@ class WSBEnv(gym.Env):
     #Setting up inital prices/data
     self.dfs = data
     self.num_cryptos = len(self.dfs) #Cryptos we will trade
-    self.timestep = 38
+    self.timestep = 0
     self.last_timestep = len(self.dfs[0]) - 1
     self.cryptos = cryptos
     #initializing state
@@ -135,7 +135,7 @@ class WSBEnv(gym.Env):
   def reset(self):
     self.balance = initial_balance
     self.shares = [0] * self.num_cryptos
-    self.timestep = random.randint(38, self.last_timestep - 1)
+    self.timestep = random.randint(0, self.last_timestep - 1)
     self.lows = [x.loc[self.timestep]['low'] for x in self.dfs]
     self.highs = [x.loc[self.timestep]['high'] for x in self.dfs]
     self.opens = [x.loc[self.timestep]['open'] for x in self.dfs]

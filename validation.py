@@ -32,9 +32,9 @@ for c in cryptos:
     '''I think we'll do a similar plan to my source idea.
     5 months for training, 2 months for validation/tuning, 5 months for testing
     '''
-    dfs.append(df[175200:262800].reset_index(drop = True))
+    dfs.append(df[38:88000].reset_index(drop = True))
 
-version = "11" #Latest version of model that we're training, for logging purposes
+version = "12" #Latest version of model that we're training, for logging purposes
 env = gym.make('gym-wsb-val-v0', data = dfs, cryptos = cryptos)
 
 from stable_baselines3.common.env_checker import check_env
