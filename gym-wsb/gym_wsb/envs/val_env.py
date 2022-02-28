@@ -96,18 +96,19 @@ class ValEnv(gym.Env):
     '''
     #Calculating reward
     reward = 0
-    reward += self.balance
     for j in range(self.num_cryptos):
         reward += self.shares[j] * self.closes[j]
-    self.total = reward
+    self.total = reward + self.balance
+    reward += 1.5 * self.balance
     reward -= previous_total
-    
     
     #Broadcasting updates
     if self.timestep % 1000 == 0:
         print("Timestep " + str(self.timestep) + " holdings (USD):")
         for k in range(len(self.shares)):
             print("{}: {}".format(self.cryptos[k], self.shares[k] * self.closes[k]))
+        print("Dollarydoos: {}".format(self.balance))
+
     info = {'shares': self.shares, 'balance': self.balance, 'total': self.total, 'closes': self.closes}
     #Updating prices for next step
     if self.timestep != self.last_timestep:
