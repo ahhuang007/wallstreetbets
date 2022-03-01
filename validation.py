@@ -34,7 +34,12 @@ for c in cryptos:
     '''
     dfs.append(df[38:88000].reset_index(drop = True))
 
-version = "15" #Latest version of model that we're training, for logging purposes
+from os import listdir
+from os.path import isfile, join
+
+onlyfiles = [f for f in listdir('./data/data_from_validation') 
+             if isfile(join('./data/data_from_validation', f))]
+version = str(len(onlyfiles) + 1) #Latest version of model that we're training, for logging purposes
 env = gym.make('gym-wsb-val-v0', data = dfs, cryptos = cryptos)
 
 from stable_baselines3.common.env_checker import check_env

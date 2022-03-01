@@ -30,7 +30,12 @@ for c in cryptos:
     '''
     dfs.append(df[88000:175200 + 88000].reset_index(drop = True))
 
-version = "15" #Latest version of model that we're training, for logging purposes
+from os import listdir
+from os.path import isfile, join
+
+onlyfiles = [f for f in listdir('./data/data_from_training/timestep_rewards') 
+             if isfile(join('./data/data_from_training/timestep_rewards', f))]
+version = str(len(onlyfiles) + 1) #Latest version of model that we're training, for logging purposes
 env = gym.make('gym-wsb-v0', data = dfs, cryptos = cryptos)
 
 env.seed(4)

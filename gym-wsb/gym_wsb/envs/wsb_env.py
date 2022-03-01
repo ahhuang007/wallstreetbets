@@ -100,9 +100,9 @@ class WSBEnv(gym.Env):
     for j in range(self.num_cryptos):
         reward += self.shares[j] * self.closes[j]
     self.total = reward + self.balance
-    reward += 1.01 * self.balance
+    reward += self.balance
     reward -= previous_total
-    
+    reward = 0.01 * reward
     
     #Broadcasting updates
     if self.timestep % 1000 == 0:
