@@ -101,7 +101,7 @@ class ValEnv(gym.Env):
     self.total = reward + self.balance
     reward += self.balance
     reward -= previous_total
-    reward = 0.01 * reward
+    
     #Broadcasting updates
     if self.timestep % 1000 == 0:
         print("Timestep " + str(self.timestep) + " holdings (USD):")
