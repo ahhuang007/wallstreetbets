@@ -32,7 +32,7 @@ for c in cryptos:
     '''I think we'll do a similar plan to my source idea.
     5 months for training, 2 months for validation/tuning, 5 months for testing
     '''
-    dfs.append(df[38:88000].reset_index(drop = True))
+    dfs.append(df[175200:262800].reset_index(drop = True))
 
 from os import listdir
 from os.path import isfile, join

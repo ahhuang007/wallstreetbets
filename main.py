@@ -28,7 +28,7 @@ for c in cryptos:
     '''I think we'll do a similar plan to my source idea.
     5 months for training, 2 months for validation/tuning, 5 months for testing
     '''
-    dfs.append(df[88000:175200 + 88000].reset_index(drop = True))
+    dfs.append(df[:175200].reset_index(drop = True))
 
 from os import listdir
 from os.path import isfile, join
@@ -64,7 +64,7 @@ obs = env.reset()
 
 #%%
 
-ppo_model = ppo_model.learn(total_timesteps = 525600, callback = record, reset_num_timesteps=True)
+ppo_model = ppo_model.learn(total_timesteps = 50000, callback = record, reset_num_timesteps=True)
 ppo_model.save("models/trained_models/trained_model_ppo_v" + version)
 
 #%%
