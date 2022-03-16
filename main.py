@@ -46,7 +46,7 @@ env.observation_space.seed(4)
 
 #In case I want to load a previously trained model for more training
 #ppo_model = PPO.load("models/trained_models/trained_model_ppo_v8", env = env)
-ppo_model = PPO('MlpPolicy', env, verbose = 1)
+ppo_model = PPO('MlpPolicy', env, verbose = 1, learning_rate = 0.00001)
 ppo_model.set_random_seed(4)
 
 
@@ -64,7 +64,7 @@ obs = env.reset()
 
 #%%
 
-ppo_model = ppo_model.learn(total_timesteps = 25000, callback = record, reset_num_timesteps=True)
+ppo_model = ppo_model.learn(total_timesteps = 525600, callback = record, reset_num_timesteps=True)
 ppo_model.save("models/trained_models/trained_model_ppo_v" + version)
 
 #%%
