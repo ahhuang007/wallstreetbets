@@ -15,9 +15,12 @@ from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckA
 from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3 import PPO
 from recorder import Recorder
+from sklearn.preprocessing import MinMaxScaler
 
 #Importing data
 dfs = []
+closes = []
+norm_dfs = []
 cryptos = ['AAVE', 'ADA', 'ALGO', 'ATOM', 
            'AVAX', 'BCH', 'BTC', 'DOT', 
            'ETH', 'LINK', 'LRC', 'LTC', 
@@ -28,7 +31,17 @@ for c in cryptos:
     '''I think we'll do a similar plan to my source idea.
     5 months for training, 2 months for validation/tuning, 5 months for testing
     '''
-    dfs.append(df[:175200].reset_index(drop = True))
+    df = df.drop(['Unnamed: 0', 'timestamp'], axis = 1)
+    dfs.append(df['close'][:175200].reset_index(drop = True))
+    cols = df.columns
+    scaler = MinMaxScaler()
+    scaler.fit(df[38:175200])
+    df = pd.DataFrame(data = scaler.transform(df))
+    df.columns = cols
+    #training = wsb_dataset(df[:175200].reset_index(drop = True), labels[:175200].reset_index(drop = True))
+    #scaler.fit()
+    
+    norm_dfs.append(df[:175200].reset_index(drop = True))
 
 from os import listdir
 from os.path import isfile, join
@@ -36,7 +49,7 @@ from os.path import isfile, join
 onlyfiles = [f for f in listdir('./data/data_from_training/timestep_rewards') 
              if isfile(join('./data/data_from_training/timestep_rewards', f))]
 version = str(len(onlyfiles) + 1) #Latest version of model that we're training, for logging purposes
-env = gym.make('gym-wsb-v0', data = dfs, cryptos = cryptos)
+env = gym.make('gym-wsb-v0', data = dfs, cryptos = cryptos, norm_data = norm_dfs)
 
 env.seed(4)
 env.action_space.seed(4)

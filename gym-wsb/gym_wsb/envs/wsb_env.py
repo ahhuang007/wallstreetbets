@@ -20,10 +20,11 @@ transaction_fee = 0.005 #May be 0.0035
 class WSBEnv(gym.Env):
   metadata = {'render.modes': ['human']}
 
-  def __init__(self, data, cryptos):
+  def __init__(self, data, cryptos, norm_data):
     super(WSBEnv, self).__init__()
     #Setting up inital prices/data
-    self.dfs = data
+    self.dfs = norm_data
+    self.actual_closes = data
     self.num_cryptos = len(self.dfs) #Cryptos we will trade
     self.timestep = 38
     self.last_timestep = len(self.dfs[0]) - 1
@@ -40,7 +41,7 @@ class WSBEnv(gym.Env):
     self.macd = [x.loc[self.timestep]['MACD'] for x in self.dfs]
     self.cci = [x.loc[self.timestep]['CCI'] for x in self.dfs]
     self.adx = [x.loc[self.timestep]['ADX'] for x in self.dfs]
-    
+    self.a_closes = [x.loc[self.timestep] for x in self.actual_closes]
     self.observations = [self.balance] + self.shares + self.prices + self.macd + self.cci + self.adx
     self.action_space = spaces.Box(low = -1, high = 1, shape = (self.num_cryptos,), dtype = 'float32') 
     self.observation_space = spaces.Box(low=-np.inf, high=np.inf, shape = (len(self.observations),), dtype = 'float32')
@@ -66,7 +67,7 @@ class WSBEnv(gym.Env):
                  transaction_fee,
                  index,
                  self.shares,
-                 self.closes)
+                 self.a_closes)
 
     for index in buy_index:
         # print('take buy action: {}'.format(actions[index]))
@@ -76,7 +77,7 @@ class WSBEnv(gym.Env):
                  transaction_fee,
                  index,
                  self.shares,
-                 self.closes)
+                 self.a_closes)
     '''
     for i in range(len(action)):
         a = action[i]
@@ -98,7 +99,7 @@ class WSBEnv(gym.Env):
     #Calculating reward
     reward = 0
     for j in range(self.num_cryptos):
-        reward += self.shares[j] * self.closes[j]
+        reward += self.shares[j] * self.a_closes[j]
     self.total = reward + self.balance
     reward += self.balance
     reward -= previous_total
@@ -107,9 +108,9 @@ class WSBEnv(gym.Env):
     if self.timestep % 1000 == 0:
         print("Timestep " + str(self.timestep) + " holdings (USD):")
         for k in range(len(self.shares)):
-            print("{}: {}".format(self.cryptos[k], self.shares[k] * self.closes[k]))
+            print("{}: {}".format(self.cryptos[k], self.shares[k] * self.a_closes[k]))
         print("Dollarydoos: {}".format(self.balance))
-    info = {'shares': self.shares, 'balance': self.balance, 'total': self.total, 'closes': self.closes}
+    info = {'shares': self.shares, 'balance': self.balance, 'total': self.total, 'closes': self.a_closes}
     #Updating prices for next step
     if self.timestep != self.last_timestep:
         self.timestep += 1
@@ -117,6 +118,7 @@ class WSBEnv(gym.Env):
         self.highs = [x.loc[self.timestep]['high'] for x in self.dfs]
         self.opens = [x.loc[self.timestep]['open'] for x in self.dfs]
         self.closes = [x.loc[self.timestep]['close'] for x in self.dfs]
+        self.a_closes = [x.loc[self.timestep] for x in self.actual_closes]
         self.volumes = [x.loc[self.timestep]['volume'] for x in self.dfs]
         self.prices = self.lows + self.highs + self.opens + self.closes + self.volumes
         self.macd = [x.loc[self.timestep]['MACD'] for x in self.dfs]
@@ -140,6 +142,7 @@ class WSBEnv(gym.Env):
     self.highs = [x.loc[self.timestep]['high'] for x in self.dfs]
     self.opens = [x.loc[self.timestep]['open'] for x in self.dfs]
     self.closes = [x.loc[self.timestep]['close'] for x in self.dfs]
+    self.a_closes = [x.loc[self.timestep] for x in self.actual_closes]
     self.volumes = [x.loc[self.timestep]['volume'] for x in self.dfs]
     self.prices = self.lows + self.highs + self.opens + self.closes + self.volumes
     self.macd = [x.loc[self.timestep]['MACD'] for x in self.dfs]
