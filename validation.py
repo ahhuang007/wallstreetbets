@@ -66,7 +66,7 @@ model.set_random_seed(4)
 
 #%%
 
-#In case I want to load a previously trained model for more training
+#Loading model
 model = PPO.load("models/trained_models/trained_model_ppo_v" + version, env = env)
 model.set_random_seed(4)
 obs = env.reset()
