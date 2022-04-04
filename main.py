@@ -16,6 +16,7 @@ from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3 import PPO
 from recorder import Recorder
 from sklearn.preprocessing import MinMaxScaler
+import pickle
 
 #Importing data
 dfs = []
@@ -36,12 +37,17 @@ for c in cryptos:
     cols = df.columns
     scaler = MinMaxScaler()
     scaler.fit(df[38:175200])
-    df = pd.DataFrame(data = scaler.transform(df))
+    df = pd.DataFrame(data = scaler.transform(df)).reset_index(drop = True)
     df.columns = cols
     #training = wsb_dataset(df[:175200].reset_index(drop = True), labels[:175200].reset_index(drop = True))
     #scaler.fit()
-    
-    norm_dfs.append(df[:175200].reset_index(drop = True))
+   
+    #This next part is for using my ML model to predict price as an indicator
+    with open('./ml_stuff/models/sgdreg_v2.pkl', 'rb') as f:
+        sgdreg = pickle.load(f)
+    preds = sgdreg.predict(df.values)
+    df['pred'] = preds
+    norm_dfs.append(df[38:175200].reset_index(drop = True))
 
 from os import listdir
 from os.path import isfile, join
@@ -59,7 +65,7 @@ env.observation_space.seed(4)
 
 #In case I want to load a previously trained model for more training
 #ppo_model = PPO.load("models/trained_models/trained_model_ppo_v25", env = env)
-policy_kwargs = dict(net_arch=[128, 128, 128])
+policy_kwargs = dict(net_arch=[64, 64])
 ppo_model = PPO('MlpPolicy', env, policy_kwargs = policy_kwargs, verbose = 1, learning_rate = 0.00001)
 ppo_model.set_random_seed(4)
 

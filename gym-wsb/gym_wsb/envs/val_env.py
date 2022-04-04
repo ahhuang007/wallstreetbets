@@ -41,8 +41,9 @@ class ValEnv(gym.Env):
     self.macd = [x.loc[self.timestep]['MACD'] for x in self.dfs]
     self.cci = [x.loc[self.timestep]['CCI'] for x in self.dfs]
     self.adx = [x.loc[self.timestep]['ADX'] for x in self.dfs]
+    self.pred = [x.loc[self.timestep]['pred'] for x in self.dfs]
     
-    self.observations = [self.balance] + self.shares + self.prices + self.macd + self.cci + self.adx
+    self.observations = [self.balance] + self.shares + self.prices + self.macd + self.cci + self.adx + self.pred
     self.action_space = spaces.Box(low = -1, high = 1, shape = (self.num_cryptos,), dtype = 'float32') 
     self.observation_space = spaces.Box(low=-np.inf, high=np.inf, shape = (len(self.observations),), dtype = 'float32')
     self.done = False
@@ -125,8 +126,8 @@ class ValEnv(gym.Env):
         self.macd = [x.loc[self.timestep]['MACD'] for x in self.dfs]
         self.cci = [x.loc[self.timestep]['CCI'] for x in self.dfs]
         self.adx = [x.loc[self.timestep]['ADX'] for x in self.dfs]
-        
-        self.observations = [self.balance] + self.shares + self.prices + self.macd + self.cci + self.adx
+        self.pred = [x.loc[self.timestep]['pred'] for x in self.dfs]
+        self.observations = [self.balance] + self.shares + self.prices + self.macd + self.cci + self.adx + self.pred
     else:
         self.done = True
     
@@ -146,8 +147,8 @@ class ValEnv(gym.Env):
     self.macd = [x.loc[self.timestep]['MACD'] for x in self.dfs]
     self.cci = [x.loc[self.timestep]['CCI'] for x in self.dfs]
     self.adx = [x.loc[self.timestep]['ADX'] for x in self.dfs]
-    
-    self.observations = [self.balance] + self.shares + self.prices + self.macd + self.cci + self.adx
+    self.pred = [x.loc[self.timestep]['pred'] for x in self.dfs]
+    self.observations = [self.balance] + self.shares + self.prices + self.macd + self.cci + self.adx + self.pred
     self.done = False
     self.total = self.balance
     print("resetting environment")

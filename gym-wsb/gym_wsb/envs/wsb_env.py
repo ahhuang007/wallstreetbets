@@ -26,7 +26,7 @@ class WSBEnv(gym.Env):
     self.dfs = norm_data
     self.actual_closes = data
     self.num_cryptos = len(self.dfs) #Cryptos we will trade
-    self.timestep = 38
+    self.timestep = 0
     self.last_timestep = len(self.dfs[0]) - 1
     self.cryptos = cryptos
     #initializing state
@@ -41,8 +41,9 @@ class WSBEnv(gym.Env):
     self.macd = [x.loc[self.timestep]['MACD'] for x in self.dfs]
     self.cci = [x.loc[self.timestep]['CCI'] for x in self.dfs]
     self.adx = [x.loc[self.timestep]['ADX'] for x in self.dfs]
+    self.pred = [x.loc[self.timestep]['pred'] for x in self.dfs]
     self.a_closes = [x.loc[self.timestep] for x in self.actual_closes]
-    self.observations = [self.balance] + self.shares + self.prices + self.macd + self.cci + self.adx
+    self.observations = [self.balance] + self.shares + self.prices + self.macd + self.cci + self.adx + self.pred
     self.action_space = spaces.Box(low = -1, high = 1, shape = (self.num_cryptos,), dtype = 'float32') 
     self.observation_space = spaces.Box(low=-np.inf, high=np.inf, shape = (len(self.observations),), dtype = 'float32')
     self.done = False
@@ -124,8 +125,8 @@ class WSBEnv(gym.Env):
         self.macd = [x.loc[self.timestep]['MACD'] for x in self.dfs]
         self.cci = [x.loc[self.timestep]['CCI'] for x in self.dfs]
         self.adx = [x.loc[self.timestep]['ADX'] for x in self.dfs]
-        
-        self.observations = [self.balance] + self.shares + self.prices + self.macd + self.cci + self.adx
+        self.pred = [x.loc[self.timestep]['pred'] for x in self.dfs]
+        self.observations = [self.balance] + self.shares + self.prices + self.macd + self.cci + self.adx + self.pred
     else:
         self.done = True
         print("reached end of timeline, resetting")
@@ -137,7 +138,7 @@ class WSBEnv(gym.Env):
   def reset(self):
     self.balance = initial_balance
     self.shares = [0] * self.num_cryptos
-    self.timestep = random.randint(38, self.last_timestep - 1)
+    self.timestep = random.randint(0, self.last_timestep - 1)
     self.lows = [x.loc[self.timestep]['low'] for x in self.dfs]
     self.highs = [x.loc[self.timestep]['high'] for x in self.dfs]
     self.opens = [x.loc[self.timestep]['open'] for x in self.dfs]
@@ -148,8 +149,8 @@ class WSBEnv(gym.Env):
     self.macd = [x.loc[self.timestep]['MACD'] for x in self.dfs]
     self.cci = [x.loc[self.timestep]['CCI'] for x in self.dfs]
     self.adx = [x.loc[self.timestep]['ADX'] for x in self.dfs]
-    
-    self.observations = [self.balance] + self.shares + self.prices + self.macd + self.cci + self.adx
+    self.pred = [x.loc[self.timestep]['pred'] for x in self.dfs]
+    self.observations = [self.balance] + self.shares + self.prices + self.macd + self.cci + self.adx + self.pred
     self.done = False
     self.total = self.balance
     print("resetting environment")

@@ -20,7 +20,7 @@ from stable_baselines3 import PPO
 from recorder import Recorder
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
-
+import pickle
 #Importing data
 dfs = []
 norm_dfs = []
@@ -41,6 +41,10 @@ for c in cryptos:
     scaler.fit(df[38:175200])
     df = pd.DataFrame(data = scaler.transform(df))
     df.columns = cols
+    with open('./ml_stuff/models/sgdreg_v2.pkl', 'rb') as f:
+        sgdreg = pickle.load(f)
+    preds = sgdreg.predict(df.values)
+    df['pred'] = preds
     #training = wsb_dataset(df[:175200].reset_index(drop = True), labels[:175200].reset_index(drop = True))
     #scaler.fit()
     
