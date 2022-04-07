@@ -13,21 +13,63 @@ fee - transaction fee
 i - index value for the crypto in question
 shares - list of our current portfolio
 closes - list of closing prices for our cryptocurrencies
+buys - list of purchases of the currency with the price they were bought at
 Returns: balance - updated balance after transaction
 shares - updated portfolio after transaction
+buys (only for sell_low) - updated list of purchases at certain prices - 
+this function removes as many purchases as needed to fulfill the sell order.
+reward (sell_low only) - reward from selling currencies
 '''
 
-def sell_low(balance, action, fee, i, shares, closes):
+def sell_low(balance, action, fee, i, shares, closes, buys):
+    reward = 0
+    
     if shares[i] > 0:
         #update balance
-        balance += shares[i] * abs(action) * (1 - fee) * closes[i]
+        amt = abs(action) * shares[i]
+        while amt > 0:
+            
+            share, price = buys[0][0], buys[0][1]
+            
+            if amt > share:
+                prev = share * price
+                amt -= share
+                if amt < 1e-16:
+                    amt = 0
+                revenue = share * (1 - fee) * closes[i]
+                balance += revenue
+                reward += (revenue - prev)
+                shares[i] -= share
+                if shares[i] < 1e-16:
+                    shares[i] = 0
+                
+                buys.pop(0)
+            elif amt == share:
+                prev = share * price
+                amt = 0
+                revenue = share * (1 - fee) * closes[i]
+                balance += revenue
+                reward += (revenue - prev)
+                shares[i] -= share
+                
+                buys.pop(0)
+            else:
+                partial = share - amt
+                prev = partial * price
+                amt = 0
+                revenue = partial * (1 - fee) * closes[i]
+                balance += revenue
+                reward += (revenue - prev)
+                shares[i] -= partial
+                buys[0][0] -= partial
+        #balance += shares[i] * abs(action) * (1 - fee) * closes[i]
         
-        shares[i] -= abs(action) * shares[i]
+        #shares[i] -= abs(action) * shares[i]
         #cost += state[index+1]*min(abs(action), state[index+STOCK_DIM+1]) * fee
         #trades += 1
     else:
         pass #No shares to sell!
-    return balance, shares
+    return balance, shares, buys, reward
 
 def buy_high(balance, action, fee, i, shares, closes):
     if balance > 0:

@@ -48,6 +48,7 @@ class ValEnv(gym.Env):
     self.observation_space = spaces.Box(low=-np.inf, high=np.inf, shape = (len(self.observations),), dtype = 'float32')
     self.done = False
     self.total = self.balance
+    self.buys = [[] for x in self.cryptos]
     
   def step(self, action):
     #A way we can reconcile action space conundrum is to interpret the action 
@@ -59,26 +60,30 @@ class ValEnv(gym.Env):
           
     sell_index = argsort_actions[:np.where(action < 0)[0].shape[0]]
     buy_index = argsort_actions[::-1][:np.where(action > 0)[0].shape[0]]
-
+    reward = 0
     for index in sell_index:
         # print('take sell action'.format(actions[index]))
         #self._sell_stock(index, actions[index])
-        self.balance, self.shares = sell_low(self.balance,
+        self.balance, self.shares, self.buys[index], reward = sell_low(self.balance,
                  action[index],
                  transaction_fee,
                  index,
                  self.shares,
-                 self.a_closes)
+                 self.a_closes,
+                 self.buys[index])
 
     for index in buy_index:
         # print('take buy action: {}'.format(actions[index]))
         #self._buy_stock(index, actions[index])
+        prev_bal, prev_sha = self.balance, self.shares[index]
         self.balance, self.shares = buy_high(self.balance,
                  action[index],
                  transaction_fee,
                  index,
                  self.shares,
                  self.a_closes)
+        if self.balance < prev_bal:
+            self.buys[index].append([self.shares[index] - prev_sha, self.a_closes[index]])
     '''
     for i in range(len(action)):
         a = action[i]
@@ -98,12 +103,13 @@ class ValEnv(gym.Env):
                                                  self.closes)
     '''
     #Calculating reward
-    reward = 0
+    #reward = 0
+    self.total = 0
     for j in range(self.num_cryptos):
-        reward += self.shares[j] * self.a_closes[j]
-    self.total = reward + self.balance
-    reward += self.balance
-    reward -= previous_total
+        self.total += self.shares[j] * self.a_closes[j]
+    self.total += self.balance
+    #reward += self.balance
+    #reward -= previous_total
     
     #Broadcasting updates
     if self.timestep % 1000 == 0:
@@ -151,6 +157,7 @@ class ValEnv(gym.Env):
     self.observations = [self.balance] + self.shares + self.prices + self.macd + self.cci + self.adx + self.pred
     self.done = False
     self.total = self.balance
+    self.buys = [[] for x in self.cryptos]
     print("resetting environment")
     return np.array(self.observations, dtype = 'float32')
     
