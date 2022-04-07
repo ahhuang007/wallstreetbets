@@ -146,7 +146,7 @@ class WSBEnv(gym.Env):
   def reset(self):
     self.balance = initial_balance
     self.shares = [0] * self.num_cryptos
-    self.timestep = random.randint(0, self.last_timestep - 1)
+    self.timestep = 0#random.randint(0, self.last_timestep - 1)
     self.lows = [x.loc[self.timestep]['low'] for x in self.dfs]
     self.highs = [x.loc[self.timestep]['high'] for x in self.dfs]
     self.opens = [x.loc[self.timestep]['open'] for x in self.dfs]
