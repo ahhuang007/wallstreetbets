@@ -64,7 +64,7 @@ env.observation_space.seed(4)
 #%%
 
 #In case I want to load a previously trained model for more training
-ppo_model = PPO.load("models/trained_models/trained_model_ppo_v33", env = env)
+ppo_model = PPO.load("models/trained_models/trained_model_ppo_v35", env = env)
 policy_kwargs = dict(net_arch=[64, 64])
 #ppo_model = PPO('MlpPolicy', env, policy_kwargs = policy_kwargs, verbose = 1, learning_rate = 0.000001)
 ppo_model.set_random_seed(4)
