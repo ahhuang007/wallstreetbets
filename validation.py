@@ -88,7 +88,7 @@ balance_data = [] #Tracks our balance at each timestep
 done = False
 reward = 0
 while not done:
-    action, _states = model.predict(obs, deterministic = False)
+    action, _states = model.predict(obs, deterministic = True)
     obs, rewards, done, info = env.step(action)
     #Appending data to lists
     data.append(rewards)    
