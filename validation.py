@@ -28,7 +28,7 @@ cryptos = ['AAVE', 'ADA', 'ALGO', 'ATOM',
            'AVAX', 'BCH', 'BTC', 'DOT', 
            'ETH', 'LINK', 'LRC', 'LTC', 
            'MANA', 'MATIC', 'SOL', 'UNI']
-cryptos = ['BTC']
+cryptos = ['ALGO']
 for c in cryptos:
     df = pd.read_csv('./data/' + c + '_data.csv')
     '''I think we'll do a similar plan to my source idea.

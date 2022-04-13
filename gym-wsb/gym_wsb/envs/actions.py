@@ -27,21 +27,18 @@ def sell_low(balance, action, fee, i, shares, closes, buys):
     if shares[i] > 0:
         #update balance
         amt = abs(action) * shares[i]
-        while amt > 0:
+        while amt > 0 and buys:
             
             share, price = buys[0][0], buys[0][1]
             
             if amt > share:
                 prev = share * price
                 amt -= share
-                if amt < 1e-16:
-                    amt = 0
+                
                 revenue = share * (1 - fee) * closes[i]
                 balance += revenue
                 reward += (revenue - prev)
                 shares[i] -= share
-                if shares[i] < 1e-16:
-                    shares[i] = 0
                 
                 buys.pop(0)
             elif amt == share:

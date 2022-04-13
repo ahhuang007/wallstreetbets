@@ -26,7 +26,7 @@ cryptos = ['AAVE', 'ADA', 'ALGO', 'ATOM',
            'AVAX', 'BCH', 'BTC', 'DOT', 
            'ETH', 'LINK', 'LRC', 'LTC', 
            'MANA', 'MATIC', 'SOL', 'UNI']
-cryptos = ['BTC']
+cryptos = ['ALGO']
 for c in cryptos:
     df = pd.read_csv('./data/' + c + '_data.csv')
     '''I think we'll do a similar plan to my source idea.
@@ -64,9 +64,9 @@ env.observation_space.seed(4)
 #%%
 
 #In case I want to load a previously trained model for more training
-ppo_model = PPO.load("models/trained_models/trained_model_ppo_v40", env = env)
+#ppo_model = PPO.load("models/trained_models/trained_model_ppo_v40", env = env)
 policy_kwargs = dict(net_arch=[64, 64, 64])
-#ppo_model = PPO('MlpPolicy', env, policy_kwargs = policy_kwargs, verbose = 1, learning_rate = 0.00001)
+ppo_model = PPO('MlpPolicy', env, policy_kwargs = policy_kwargs, verbose = 1, learning_rate = 0.00001)
 ppo_model.set_random_seed(4)
 
 
@@ -84,9 +84,9 @@ obs = env.reset()
 
 #%%
 
-ppo_model = ppo_model.learn(total_timesteps = 525600, callback = record, reset_num_timesteps=True)
+ppo_model = ppo_model.learn(total_timesteps = 1500000, callback = record, reset_num_timesteps=True)
 ppo_model.save("models/trained_models/trained_model_ppo_v" + version)
-
+env.close()
 #%%
 
 #Saving/plotting data
