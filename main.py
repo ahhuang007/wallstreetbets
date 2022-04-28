@@ -26,7 +26,7 @@ cryptos = ['AAVE', 'ADA', 'ALGO', 'ATOM',
            'AVAX', 'BCH', 'BTC', 'DOT', 
            'ETH', 'LINK', 'LRC', 'LTC', 
            'MANA', 'MATIC', 'SOL', 'UNI']
-cryptos = ['ALGO']
+cryptos = ['BTC']
 for c in cryptos:
     df = pd.read_csv('./data/' + c + '_data.csv')
     '''I think we'll do a similar plan to my source idea.
@@ -36,7 +36,7 @@ for c in cryptos:
     dfs.append(df['close'][:175200].reset_index(drop = True))
     cols = df.columns
     scaler = MinMaxScaler()
-    scaler.fit(df[38:175200])
+    scaler.fit(df[:175200])
     df = pd.DataFrame(data = scaler.transform(df)).reset_index(drop = True)
     df.columns = cols
     #training = wsb_dataset(df[:175200].reset_index(drop = True), labels[:175200].reset_index(drop = True))
@@ -47,7 +47,7 @@ for c in cryptos:
         sgdreg = pickle.load(f)
     preds = sgdreg.predict(df.values)
     df['pred'] = preds
-    norm_dfs.append(df[38:175200].reset_index(drop = True))
+    norm_dfs.append(df[:175200].reset_index(drop = True))
 
 from os import listdir
 from os.path import isfile, join

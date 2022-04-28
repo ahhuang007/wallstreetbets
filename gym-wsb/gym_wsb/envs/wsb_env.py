@@ -41,6 +41,7 @@ class WSBEnv(gym.Env):
     self.macd = [x.loc[self.timestep]['MACD'] for x in self.dfs]
     self.cci = [x.loc[self.timestep]['CCI'] for x in self.dfs]
     self.adx = [x.loc[self.timestep]['ADX'] for x in self.dfs]
+    self.rsi = [x.loc[self.timestep]['RSI'] for x in self.dfs]
     self.pred = [x.loc[self.timestep]['pred'] for x in self.dfs]
     self.a_closes = [x.loc[self.timestep] for x in self.actual_closes]
     self.observations = [self.balance] + self.shares + self.prices + self.macd + self.cci + self.adx + self.pred
@@ -133,6 +134,7 @@ class WSBEnv(gym.Env):
         self.macd = [x.loc[self.timestep]['MACD'] for x in self.dfs]
         self.cci = [x.loc[self.timestep]['CCI'] for x in self.dfs]
         self.adx = [x.loc[self.timestep]['ADX'] for x in self.dfs]
+        self.rsi = [x.loc[self.timestep]['RSI'] for x in self.dfs]
         self.pred = [x.loc[self.timestep]['pred'] for x in self.dfs]
         self.observations = [self.balance] + self.shares + self.prices + self.macd + self.cci + self.adx + self.pred
     else:
@@ -146,7 +148,7 @@ class WSBEnv(gym.Env):
   def reset(self):
     self.balance = initial_balance
     self.shares = [0] * self.num_cryptos
-    self.timestep = 0#random.randint(0, self.last_timestep - 1)
+    self.timestep = random.randint(0, self.last_timestep - 1)
     self.lows = [x.loc[self.timestep]['low'] for x in self.dfs]
     self.highs = [x.loc[self.timestep]['high'] for x in self.dfs]
     self.opens = [x.loc[self.timestep]['open'] for x in self.dfs]
@@ -157,6 +159,7 @@ class WSBEnv(gym.Env):
     self.macd = [x.loc[self.timestep]['MACD'] for x in self.dfs]
     self.cci = [x.loc[self.timestep]['CCI'] for x in self.dfs]
     self.adx = [x.loc[self.timestep]['ADX'] for x in self.dfs]
+    self.rsi = [x.loc[self.timestep]['RSI'] for x in self.dfs]
     self.pred = [x.loc[self.timestep]['pred'] for x in self.dfs]
     self.observations = [self.balance] + self.shares + self.prices + self.macd + self.cci + self.adx + self.pred
     self.done = False
