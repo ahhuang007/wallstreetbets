@@ -84,7 +84,7 @@ obs = env.reset()
 
 #%%
 
-ppo_model = ppo_model.learn(total_timesteps = 1500000, callback = record, reset_num_timesteps=True)
+ppo_model = ppo_model.learn(total_timesteps = 500000, callback = record, reset_num_timesteps=True)
 ppo_model.save("models/trained_models/trained_model_ppo_v" + version)
 env.close()
 #%%
