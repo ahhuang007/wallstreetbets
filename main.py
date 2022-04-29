@@ -43,7 +43,7 @@ for c in cryptos:
     #scaler.fit()
    
     #This next part is for using my ML model to predict price as an indicator
-    with open('./ml_stuff/models/sgdreg_v2.pkl', 'rb') as f:
+    with open('./ml_stuff/models/sgdreg_BTC_v1.pkl', 'rb') as f:
         sgdreg = pickle.load(f)
     preds = sgdreg.predict(df.values)
     df['pred'] = preds

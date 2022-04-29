@@ -41,6 +41,7 @@ class ValEnv(gym.Env):
     self.macd = [x.loc[self.timestep]['MACD'] for x in self.dfs]
     self.cci = [x.loc[self.timestep]['CCI'] for x in self.dfs]
     self.adx = [x.loc[self.timestep]['ADX'] for x in self.dfs]
+    self.rsi = [x.loc[self.timestep]['RSI'] for x in self.dfs]
     self.pred = [x.loc[self.timestep]['pred'] for x in self.dfs]
     
     self.observations = [self.balance] + self.shares + self.prices + self.macd + self.cci + self.adx + self.pred
@@ -132,6 +133,7 @@ class ValEnv(gym.Env):
         self.macd = [x.loc[self.timestep]['MACD'] for x in self.dfs]
         self.cci = [x.loc[self.timestep]['CCI'] for x in self.dfs]
         self.adx = [x.loc[self.timestep]['ADX'] for x in self.dfs]
+        self.rsi = [x.loc[self.timestep]['RSI'] for x in self.dfs]
         self.pred = [x.loc[self.timestep]['pred'] for x in self.dfs]
         self.observations = [self.balance] + self.shares + self.prices + self.macd + self.cci + self.adx + self.pred
     else:
@@ -153,6 +155,7 @@ class ValEnv(gym.Env):
     self.macd = [x.loc[self.timestep]['MACD'] for x in self.dfs]
     self.cci = [x.loc[self.timestep]['CCI'] for x in self.dfs]
     self.adx = [x.loc[self.timestep]['ADX'] for x in self.dfs]
+    self.rsi = [x.loc[self.timestep]['RSI'] for x in self.dfs]
     self.pred = [x.loc[self.timestep]['pred'] for x in self.dfs]
     self.observations = [self.balance] + self.shares + self.prices + self.macd + self.cci + self.adx + self.pred
     self.done = False
