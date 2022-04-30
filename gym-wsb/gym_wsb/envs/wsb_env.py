@@ -29,6 +29,7 @@ class WSBEnv(gym.Env):
     self.timestep = 0
     self.last_timestep = len(self.dfs[0]) - 1
     self.cryptos = cryptos
+    self.counter = 0
     #initializing state
     self.balance = initial_balance
     self.shares = [0] * self.num_cryptos
@@ -113,7 +114,7 @@ class WSBEnv(gym.Env):
     self.total += self.balance
     #reward += self.balance
     #reward -= previous_total
-    
+    self.counter += 1
     #Broadcasting updates
     if self.timestep % 1000 == 0:
         print("Timestep " + str(self.timestep) + " holdings (USD):")
@@ -122,7 +123,7 @@ class WSBEnv(gym.Env):
         print("Dollarydoos: {}".format(self.balance))
     info = {'shares': self.shares, 'balance': self.balance, 'total': self.total, 'closes': self.a_closes}
     #Updating prices for next step
-    if self.timestep != self.last_timestep:
+    if self.timestep != self.last_timestep and self.counter < 10000:
         self.timestep += 1
         self.lows = [x.loc[self.timestep]['low'] for x in self.dfs]
         self.highs = [x.loc[self.timestep]['high'] for x in self.dfs]
@@ -139,16 +140,21 @@ class WSBEnv(gym.Env):
         self.observations = [self.balance] + self.shares + self.prices + self.macd + self.cci + self.adx + self.pred
     else:
         self.done = True
-        print("reached end of timeline, resetting")
+        print("reached end of episode, resetting")
+        if self.total <= 101:
+            reward -= 50
+        else:
+            reward += 50
     if self.total < 20:
         print("balance too low")
         self.done = True
+        reward -= 50
     return np.array(self.observations, dtype = 'float32'), reward, self.done, info
 
   def reset(self):
     self.balance = initial_balance
     self.shares = [0] * self.num_cryptos
-    self.timestep = random.randint(0, self.last_timestep - 1)
+    self.timestep = random.randint(0, self.last_timestep - 10001)
     self.lows = [x.loc[self.timestep]['low'] for x in self.dfs]
     self.highs = [x.loc[self.timestep]['high'] for x in self.dfs]
     self.opens = [x.loc[self.timestep]['open'] for x in self.dfs]
@@ -165,6 +171,7 @@ class WSBEnv(gym.Env):
     self.done = False
     self.total = self.balance
     self.buys = [[] for x in self.cryptos]
+    self.counter = 0
     print("resetting environment")
     return np.array(self.observations, dtype = 'float32')
     
