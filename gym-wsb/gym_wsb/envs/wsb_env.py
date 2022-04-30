@@ -26,7 +26,7 @@ class WSBEnv(gym.Env):
     self.dfs = norm_data
     self.actual_closes = data
     self.num_cryptos = len(self.dfs) #Cryptos we will trade
-    self.timestep = 0
+    self.timestep = random.randint(0, self.last_timestep - 1)
     self.last_timestep = len(self.dfs[0]) - 1
     self.cryptos = cryptos
     self.counter = 0
@@ -124,7 +124,7 @@ class WSBEnv(gym.Env):
     info = {'shares': self.shares, 'balance': self.balance, 'total': self.total, 'closes': self.a_closes}
     #Updating prices for next step
     if self.timestep != self.last_timestep and self.counter < 10000:
-        self.timestep += 1
+        self.timestep = random.randint(0, self.last_timestep - 1)
         self.lows = [x.loc[self.timestep]['low'] for x in self.dfs]
         self.highs = [x.loc[self.timestep]['high'] for x in self.dfs]
         self.opens = [x.loc[self.timestep]['open'] for x in self.dfs]
@@ -154,7 +154,7 @@ class WSBEnv(gym.Env):
   def reset(self):
     self.balance = initial_balance
     self.shares = [0] * self.num_cryptos
-    self.timestep = random.randint(0, self.last_timestep - 10001)
+    self.timestep = random.randint(0, self.last_timestep - 1)
     self.lows = [x.loc[self.timestep]['low'] for x in self.dfs]
     self.highs = [x.loc[self.timestep]['high'] for x in self.dfs]
     self.opens = [x.loc[self.timestep]['open'] for x in self.dfs]
