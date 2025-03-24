@@ -2,6 +2,8 @@
 """
 Created on Wed Jan  5 19:48:07 2022
 
+Rewriting this code to reflect my new approach
+
 @author: ahhua
 """
 
@@ -15,47 +17,20 @@ from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckA
 from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3 import PPO
 from recorder import Recorder
-from sklearn.preprocessing import MinMaxScaler
 import pickle
 
 #Importing data
 dfs = []
 closes = []
 norm_dfs = []
-cryptos = ['AAVE', 'ADA', 'ALGO', 'ATOM', 
-           'AVAX', 'BCH', 'BTC', 'DOT', 
-           'ETH', 'LINK', 'LRC', 'LTC', 
-           'MANA', 'MATIC', 'SOL', 'UNI']
-cryptos = ['BTC']
+cryptos = ['ETH', 'ADA', 'XRP']
 for c in cryptos:
-    df = pd.read_csv('./data/' + c + '_data.csv')
-    '''I think we'll do a similar plan to my source idea.
-    5 months for training, 2 months for validation/tuning, 5 months for testing
-    '''
-    df = df.drop(['Unnamed: 0', 'timestamp'], axis = 1)
-    dfs.append(df['close'][:175200].reset_index(drop = True))
-    cols = df.columns
-    scaler = MinMaxScaler()
-    scaler.fit(df[:175200])
-    df = pd.DataFrame(data = scaler.transform(df)).reset_index(drop = True)
-    df.columns = cols
-    #training = wsb_dataset(df[:175200].reset_index(drop = True), labels[:175200].reset_index(drop = True))
-    #scaler.fit()
-   
-    #This next part is for using my ML model to predict price as an indicator
-    with open('./ml_stuff/models/sgdreg_BTC_v1.pkl', 'rb') as f:
-        sgdreg = pickle.load(f)
-    preds = sgdreg.predict(df.values)
-    df['pred'] = preds
-    norm_dfs.append(df[:175200].reset_index(drop = True))
-
-from os import listdir
-from os.path import isfile, join
-
-onlyfiles = [f for f in listdir('./data/data_from_training/timestep_rewards') 
-             if isfile(join('./data/data_from_training/timestep_rewards', f))]
-version = str(len(onlyfiles) + 1) #Latest version of model that we're training, for logging purposes
-env = gym.make('gym-wsb-v0', data = dfs, cryptos = cryptos, norm_data = norm_dfs)
+    df = pd.read_csv('./data/' + c + '_training_ta_data.csv')
+    dfs.append(df)
+#In previous approach data = closing prices for each currency
+#cryptos was list of currencies
+#norm_data was the normalized overall data along with ML predictions
+env = gym.make('gym-wsb-v2', data = dfs, cryptos = cryptos)
 
 env.seed(4)
 env.action_space.seed(4)

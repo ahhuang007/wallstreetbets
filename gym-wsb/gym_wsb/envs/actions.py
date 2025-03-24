@@ -14,70 +14,72 @@ i - index value for the crypto in question
 shares - list of our current portfolio
 closes - list of closing prices for our cryptocurrencies
 buys - list of purchases of the currency with the price they were bought at
+
 Returns: balance - updated balance after transaction
 shares - updated portfolio after transaction
 buys (only for sell_low) - updated list of purchases at certain prices - 
 this function removes as many purchases as needed to fulfill the sell order.
+
+I think I used buys to be able to calculate rewards for selling at a higher price than I bought the currency at 
 reward (sell_low only) - reward from selling currencies
 '''
 
 def sell_low(balance, action, fee, i, shares, closes, buys):
-    reward = 0
     
-    if shares[i] > 0:
-        #update balance
-        amt = abs(action) * shares[i]
-        while amt > 0 and buys:
+    balance += shares[i] * abs(action) * (1 - fee) * closes[i]
+    transaction_cost = shares[i] * abs(action) * fee  * closes[i]
+    shares[i] -= abs(action) * shares[i]
+    #update balance
+    amt = abs(action) * shares[i]
+    while amt > 0 and buys: #This removes shares based on fifo
+    #for example, if I buy 1 ETH at t = 1 and then 1 more ETH at t = 2,
+    #if i sell 1 ETH at t = 3 I calculate the PNL based on the price at t = 1
+        
+        share, price = buys[0][0], buys[0][1]
+        
+        if amt > share:
+            prev = share * price
+            amt -= share
             
-            share, price = buys[0][0], buys[0][1]
+            revenue = share * (1 - fee) * closes[i]
+            balance += revenue
+            shares[i] -= share
             
-            if amt > share:
-                prev = share * price
-                amt -= share
-                
-                revenue = share * (1 - fee) * closes[i]
-                balance += revenue
-                reward += (revenue - prev)
-                shares[i] -= share
-                
-                buys.pop(0)
-            elif amt == share:
-                prev = share * price
-                amt = 0
-                revenue = share * (1 - fee) * closes[i]
-                balance += revenue
-                reward += (revenue - prev)
-                shares[i] -= share
-                
-                buys.pop(0)
-            else:
-                partial = share - amt
-                prev = partial * price
-                amt = 0
-                revenue = partial * (1 - fee) * closes[i]
-                balance += revenue
-                reward += (revenue - prev)
-                shares[i] -= partial
-                buys[0][0] -= partial
+            buys.pop(0)
+        elif amt == share:
+            prev = share * price
+            amt = 0
+            revenue = share * (1 - fee) * closes[i]
+            balance += revenue
+            shares[i] -= share
+            
+            buys.pop(0)
+        else:
+            partial = share - amt
+            prev = partial * price
+            amt = 0
+            revenue = partial * (1 - fee) * closes[i]
+            balance += revenue
+            shares[i] -= partial
+            buys[0][0] -= partial
         #balance += shares[i] * abs(action) * (1 - fee) * closes[i]
         
         #shares[i] -= abs(action) * shares[i]
         #cost += state[index+1]*min(abs(action), state[index+STOCK_DIM+1]) * fee
         #trades += 1
-    else:
-        pass #No shares to sell!
-    return balance, shares, buys, reward
 
-def buy_high(balance, action, fee, i, shares, closes):
+    return balance, shares, transaction_cost
+
+def buy_high(balance, action, fee, i, shares, closes, buys):
     if balance > 0:
         #update balance
-        if closes[i] > 0: #Price must exist to be able to be bought
-            shares[i] += ((1 - fee) * balance * abs(action)) / closes[i]
-            balance -= abs(action) * balance
-        else:
-            pass
+        amt = ((1 - fee) * balance * abs(action)) / closes[i] #amount of currency, e.g. 0.2 ETH
+        shares[i] += amt
+        balance -= abs(action) * balance
+        transaction_cost = fee * balance * abs(action)
+        buys.append([amt, closes[i]]) #Append the amount of currency bought at the price
         #cost+= state[index+1]*min(available_amount, action) * fee
         #trades += 1
     else:
         pass
-    return balance, shares
+    return balance, shares, transaction_cost, buys
